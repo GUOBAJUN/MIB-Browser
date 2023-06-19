@@ -6,6 +6,7 @@
     xmlns:local="using:MIB_Browser"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:settings="using:MIB_Browser.Properties"
     mc:Ignorable="d">
 
     <Grid>
@@ -31,15 +32,15 @@
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="Agent IP" FontSize="16" Margin="10,0,10,0" VerticalAlignment="Center"/>
-                    <TextBox x:Name="AgentIP" Width="157" Height="32" Text="127.0.0.1" PlaceholderText="127.0.0.1" FontWeight="SemiBold"/>
+                    <TextBox x:Name="AgentIP" Width="157" Height="32" Text="{x:Bind settings:mibbrowser.Default.AgentIP}" PlaceholderText="127.0.0.1" FontWeight="SemiBold"/>
                     <TextBlock Text="Time Out" FontSize="16" Margin="10,0,10,0" VerticalAlignment="Center"/>
-                    <NumberBox x:Name="TimeOut" Value="2000" SpinButtonPlacementMode="Compact" Width="121" SmallChange="500" Minimum="1"/>
+                    <NumberBox x:Name="TimeOut" Value="{x:Bind settings:mibbrowser.Default.TimeOut}" SpinButtonPlacementMode="Compact" Width="121" SmallChange="500" Minimum="1"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.Row="1">
                     <TextBlock Text="Community" FontSize="16" Margin="10,0,10,0" VerticalAlignment="Center"/>
-                    <TextBox x:Name="Community" Width="135" Text="public" PlaceholderText="Community Name" FontWeight="SemiBold"/>
+                    <TextBox x:Name="Community" Width="135" Text="{x:Bind settings:mibbrowser.Default.Community}" PlaceholderText="Community Name" FontWeight="SemiBold"/>
                     <TextBlock Text="MaxRepetitions" FontSize="16" Margin="10,0,3,0" VerticalAlignment="Center"/>
-                    <NumberBox x:Name="MaxRepetitions" Width="85" Value="10" />
+                    <NumberBox x:Name="MaxRepetitions" Width="85" Value="{x:Bind settings:mibbrowser.Default.MaxRepetitions}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.Row="2">
                     <TextBlock Text="OID" FontSize="16" Margin="10,0,10,0" VerticalAlignment="Center"/>

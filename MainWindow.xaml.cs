@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -13,14 +12,10 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-using Lextm.SharpSnmpLib;
-using Lextm.SharpSnmpLib.Messaging;
-using System.Net;
 using System.Diagnostics;
 using WinRT.Interop;
 using Microsoft.UI;
 using System.Runtime.CompilerServices;
-using System.Collections.ObjectModel;
 using System.Security.Cryptography;
 using Windows.ApplicationModel.Resources.Core;
 using System.Threading;
@@ -75,7 +70,7 @@ public sealed partial class MainWindow : Window
         appWindow.Resize(new Windows.Graphics.SizeInt32(820, 600));
         appWindow.Title = "MIB Browser";
         // 创建MIB Browser实例
-        Browser = new MIB_Browser(ip: this.AgentIP.Text, community: this.Community.Text, timeout: (int)this.TimeOut.Value, maxRepetitions:(int)MaxRepetitions.Value);
+        Browser = new MIB_Browser(ip:Properties.mibbrowser.Default.AgentIP, community: Properties.mibbrowser.Default.Community, timeout: (int)Properties.mibbrowser.Default.TimeOut, maxRepetitions:(int)Properties.mibbrowser.Default.MaxRepetitions);
         this.OID_ComboBox.SelectedIndex = 0;
         // 绑定事件响应函数
         this.AgentIP.TextChanged += AgentIP_Changed;
@@ -227,9 +222,6 @@ public sealed partial class MainWindow : Window
                 break;
             }
             var addr = MIB_Browser.UINTtoIP(i);
-            var addr4 = addr.Split('.')[3];
-            if (addr4 == "0" || addr4 == "255")
-                continue;
             Browser.SetIP(addr);
             try
             {
@@ -319,150 +311,16 @@ public sealed partial class MainWindow : Window
         }
         this.Activated -= MainWindow_Activated;
         m_configuarationSource = null;
+
+        Properties.mibbrowser.Default.AgentIP = this.AgentIP.Text;
+        Properties.mibbrowser.Default.Community = this.Community.Text;
+        Properties.mibbrowser.Default.TimeOut = (int)this.TimeOut.Value;
+        Properties.mibbrowser.Default.MaxRepetitions = (int)this.MaxRepetitions.Value;
+        Properties.mibbrowser.Default.Save();
     }
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
     {
         m_configuarationSource.IsInputActive = args.WindowActivationState != WindowActivationState.Deactivated;
-    }
-}
-
-public class MIB_Browser
-{
-    private string IP
-    {
-        get; set;
-    }
-    private string OID
-    {
-        get; set;
-    }
-    private string Community
-    {
-        get; set;
-    }
-    private int Timeout
-    {
-        get; set;
-    }
-
-    private int MaxRepetitions
-    {
-        get; set; 
-    }
-
-    private int request_id = 0;
-
-    public ObservableCollection<string> OID_History
-    {
-        get; set;
-    }
-    public MIB_Browser(string ip = "127.0.0.1", string oid = "1.3.6.1.2.1.1.5.0", string community = "public", int timeout = 2000, int maxRepetitions = 10)
-    {
-        IP = ip;
-        OID = oid;
-        Community = community;
-        Timeout = timeout;
-        OID_History = new ObservableCollection<string>();
-        OID_History.Insert(0, oid);
-        MaxRepetitions = maxRepetitions;
-    }
-
-    public IList<Variable> GetRequest()
-    {
-        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
-        List<Variable> variables = new List<Variable>
-        {
-            new Variable(new ObjectIdentifier(OID))
-        };
-        GetRequestMessage request = new GetRequestMessage(request_id++, VersionCode.V1, new OctetString(Community), variables);
-        ISnmpMessage response;
-        try
-        {
-            response = request.GetResponse(Timeout, receiver);
-        }
-        catch (Exception)
-        {
-            throw;
-        }
-        if (response != null)
-        {
-            return response.Pdu().Variables;
-        }
-        return null;
-    }
-
-    public IList<Variable> GetNextRequest()
-    {
-        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
-        List<Variable> variables = new List<Variable>
-        {
-            new Variable(new ObjectIdentifier(OID))
-        };
-        GetNextRequestMessage request = new GetNextRequestMessage(request_id++, VersionCode.V1, new OctetString(Community), variables);
-        ISnmpMessage response;
-        try
-        {
-            response = request.GetResponse(Timeout, receiver);
-        }
-        catch (Exception)
-        {
-            throw;
-        }
-        if (response != null)
-        {
-            return response.Pdu().Variables;
-        }
-        return null;
-    }
-
-    public IList<Variable> GetBulk()
-    {
-        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
-        List<Variable> variables = new List<Variable>
-        {
-            new Variable (new ObjectIdentifier(OID))
-        };
-        GetBulkRequestMessage request = new GetBulkRequestMessage(request_id++,VersionCode.V2,new OctetString(Community),0,MaxRepetitions,variables);
-        ISnmpMessage response;
-        try
-        {
-            response = request.GetResponse(Timeout, receiver);
-        }
-        catch(Exception) { throw; }
-        if (response != null)
-        {
-            return response.Pdu().Variables;
-        }
-        return null;
-    }
-
-    public static uint IPtoUINT(string addr)
-    {
-        if (!IPAddress.TryParse(addr, out var ip)) return 0;
-        var bInt = ip.GetAddressBytes();
-        if (BitConverter.IsLittleEndian)
-            Array.Reverse(bInt);
-        return BitConverter.ToUInt32(bInt, 0);
-    }
-
-    public static string UINTtoIP(uint addr)
-    {
-        var addr1 = (byte)((addr & 0xFF000000) >> 0x18);
-        var addr2 = (byte)((addr & 0x00FF0000) >> 0x10);
-        var addr3 = (byte)((addr & 0x0000FF00) >> 0x08);
-        var addr4 = (byte)((addr & 0x000000FF));
-        return string.Format("{0}.{1}.{2}.{3}", addr1, addr2, addr3, addr4);
-    }
-
-    public void SetIP(string ip) => IP = ip;
-    public void SetOID(string oid) => OID = oid;
-    public void SetCommunity(string community) => Community = community;
-    public void SetTimeout(int timeout) => Timeout = timeout;
-    public void SetMaxRepetitions(int maxRepetitions) => MaxRepetitions = maxRepetitions;
-    public string GetOID() => OID;
-    public override string ToString()
-    {
-        return IP + ":" + OID + ":" + Community + ":" + Timeout;
     }
 }
 
