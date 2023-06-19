@@ -69,7 +69,7 @@
             </Grid>
             <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Grid.Column="1" Background="#11FFFFFF">
                 <Button x:Name="GetValueBtn" Content="Get Value" Margin="49,10,0,10" Style="{StaticResource AccentButtonStyle}"/>
-                <Button x:Name="GetNextBtn" Content="Get Next" Margin="51,10,0,10"/>
+                <RepeatButton x:Name="GetNextBtn" Content="Get Next" Margin="51,10,0,10"/>
             </StackPanel>
         </Grid>
     </Grid>

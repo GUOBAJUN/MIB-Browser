@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Net;
 using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpLib.Messaging;
-using System.Net;
-using System.Collections.ObjectModel;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -31,7 +31,7 @@ public class MIB_Browser
 
     private int MaxRepetitions
     {
-        get; set; 
+        get; set;
     }
 
     private int request_id = 0;
@@ -106,13 +106,13 @@ public class MIB_Browser
         {
             new Variable (new ObjectIdentifier(OID))
         };
-        GetBulkRequestMessage request = new GetBulkRequestMessage(request_id++,VersionCode.V2,new OctetString(Community),0,MaxRepetitions,variables);
+        GetBulkRequestMessage request = new GetBulkRequestMessage(request_id++, VersionCode.V2, new OctetString(Community), 0, MaxRepetitions, variables);
         ISnmpMessage response;
         try
         {
             response = request.GetResponse(Timeout, receiver);
         }
-        catch(Exception) { throw; }
+        catch (Exception) { throw; }
         if (response != null)
         {
             return response.Pdu().Variables;

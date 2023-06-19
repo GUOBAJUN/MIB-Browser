@@ -27,7 +27,6 @@
 
   <ItemGroup>
     <PackageReference Include="Lextm.SharpSnmpLib" Version="12.5.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="7.0.0" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230313.1" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />

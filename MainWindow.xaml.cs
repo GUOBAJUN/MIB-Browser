@@ -1,28 +1,13 @@
 using System;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
+using System.Threading;
+using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using System.Diagnostics;
-using WinRT.Interop;
-using Microsoft.UI;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using Windows.ApplicationModel.Resources.Core;
-using System.Threading;
-using System.ComponentModel;
-using Lextm.SharpSnmpLib.Security;
-using System.Runtime.InteropServices;
 using WinRT;
+using WinRT.Interop;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -39,7 +24,10 @@ public sealed partial class MainWindow : Window
     }
 
     private readonly BackgroundWorker _worker = new();
-    private SynchronizationContext Context{ get; set; }
+    private SynchronizationContext Context
+    {
+        get; set;
+    }
 
     private WindowsSystemDispatcherQueueHelper m_wsdqHelper;
     private Microsoft.UI.Composition.SystemBackdrops.DesktopAcrylicController m_acrylicController;
@@ -50,7 +38,7 @@ public sealed partial class MainWindow : Window
         this.InitializeComponent();
 
         TrySetAcrylicBackdrop();
-        
+
         // 配置BackgroundWorker
         _worker.WorkerSupportsCancellation = true;
         _worker.WorkerReportsProgress = true;
@@ -70,7 +58,7 @@ public sealed partial class MainWindow : Window
         appWindow.Resize(new Windows.Graphics.SizeInt32(820, 600));
         appWindow.Title = "MIB Browser";
         // 创建MIB Browser实例
-        Browser = new MIB_Browser(ip:Properties.mibbrowser.Default.AgentIP, community: Properties.mibbrowser.Default.Community, timeout: (int)Properties.mibbrowser.Default.TimeOut, maxRepetitions:(int)Properties.mibbrowser.Default.MaxRepetitions);
+        Browser = new MIB_Browser(ip: Properties.mibbrowser.Default.AgentIP, community: Properties.mibbrowser.Default.Community, timeout: (int)Properties.mibbrowser.Default.TimeOut, maxRepetitions: (int)Properties.mibbrowser.Default.MaxRepetitions);
         this.OID_ComboBox.SelectedIndex = 0;
         // 绑定事件响应函数
         this.AgentIP.TextChanged += AgentIP_Changed;
@@ -120,7 +108,7 @@ public sealed partial class MainWindow : Window
             }
             this.OID_ComboBox.SelectedIndex = 0;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             ContentDialog dialog = new();
             dialog.XamlRoot = this.Content.XamlRoot;
@@ -227,12 +215,12 @@ public sealed partial class MainWindow : Window
             {
                 var variables = Browser.GetRequest();
                 foreach (var variable in variables)
-                    Context.Post(AppendResult,addr + " is online. Hostname: " + variable.Data + "\n");
+                    Context.Post(AppendResult, addr + " is online. Hostname: " + variable.Data + "\n");
             }
             catch { }
             finally
             {
-                worker.ReportProgress((int)((i-ip_begin+1.0) / (ip_end - ip_begin + 1.0) * 100));
+                worker.ReportProgress((int)((i - ip_begin + 1.0) / (ip_end - ip_begin + 1.0) * 100));
             }
         }
     }
@@ -256,7 +244,7 @@ public sealed partial class MainWindow : Window
         this.ScanIPBtn.Content = "Scan";
         this.ProgressBar.Value = 0;
         this.ProgressBar.Visibility = Visibility.Collapsed;
-        if(e.Cancelled)
+        if (e.Cancelled)
         {
             this.ScanIPBtn.IsEnabled = true;
         }
@@ -304,7 +292,7 @@ public sealed partial class MainWindow : Window
     }
     private void MainWindow_Closed(object sender, WindowEventArgs args)
     {
-        if(m_acrylicController != null)
+        if (m_acrylicController != null)
         {
             m_acrylicController.Dispose();
             m_acrylicController = null;
