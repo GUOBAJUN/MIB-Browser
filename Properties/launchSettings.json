@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "MIB Browser (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "MIB Browser (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
