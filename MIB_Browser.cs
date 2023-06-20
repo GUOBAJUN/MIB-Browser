@@ -12,34 +12,15 @@ namespace MIB_Browser;
 
 public class MIB_Browser
 {
-    private string IP
-    {
-        get; set;
-    }
-    private string OID
-    {
-        get; set;
-    }
-    private string Community
-    {
-        get; set;
-    }
-    private int Timeout
-    {
-        get; set;
-    }
-
-    private int MaxRepetitions
-    {
-        get; set;
-    }
-
+    private string IP { get; set; }
+    private string OID { get; set; }
+    private string Community { get; set; }
+    private int Timeout { get; set; }
+    private int MaxRepetitions { get; set; }
     private int request_id = 0;
 
-    public ObservableCollection<string> OID_History
-    {
-        get; set;
-    }
+    public ObservableCollection<string> OID_History { get; set; }
+
     public MIB_Browser(string ip = "127.0.0.1", string oid = "1.3.6.1.2.1.1.1.0", string community = "public", int timeout = 2000, int maxRepetitions = 10)
     {
         IP = ip;
@@ -68,10 +49,7 @@ public class MIB_Browser
                 return response.Pdu().Variables;
             }
         }
-        catch (Exception)
-        {
-            throw;
-        }
+        catch (Exception) { throw; }
         return null;
     }
 
@@ -92,10 +70,7 @@ public class MIB_Browser
                 return response.Pdu().Variables;
             }
         }
-        catch (Exception)
-        {
-            throw;
-        }
+        catch (Exception) { throw; }
         return null;
     }
 

@@ -19,16 +19,9 @@ namespace MIB_Browser;
 /// </summary>
 public sealed partial class MainWindow : Window
 {
-    private MIB_Browser Browser
-    {
-        get; set;
-    }
-
+    private MIB_Browser Browser { get; set; }
+    private SynchronizationContext Context { get; set; }
     private readonly BackgroundWorker _worker = new();
-    private SynchronizationContext Context
-    {
-        get; set;
-    }
 
     public MainWindow()
     {
@@ -89,7 +82,7 @@ public sealed partial class MainWindow : Window
                 CloseButtonText = "Close",
                 DefaultButton = ContentDialogButton.Close
             };
-            _ = dialog.ShowAsync();
+            try { _ = dialog.ShowAsync(); } catch { }
         }
     }
 
@@ -117,7 +110,7 @@ public sealed partial class MainWindow : Window
                 CloseButtonText = "Close",
                 DefaultButton = ContentDialogButton.Close
             };
-            _ = dialog.ShowAsync();
+            try { _ = dialog.ShowAsync(); } catch { }
         }
     }
 
@@ -147,7 +140,7 @@ public sealed partial class MainWindow : Window
                 CloseButtonText = "Close",
                 DefaultButton = ContentDialogButton.Close
             };
-            _ = dialog.ShowAsync();
+            try { _ = dialog.ShowAsync(); } catch { }
         }
     }
 
@@ -155,15 +148,7 @@ public sealed partial class MainWindow : Window
     {
         if (!_worker.IsBusy)
         {
-            this.GetValueBtn.IsEnabled = false;
-            this.GetNextBtn.IsEnabled = false;
-            this.AgentIP.IsEnabled = false;
-            this.OID_ComboBox.IsEnabled = false;
-            this.TimeOut.IsEnabled = false;
-            this.Community.IsEnabled = false;
-            this.IPBegin.IsEnabled = false;
-            this.IPEnd.IsEnabled = false;
-            this.GetBulkBtn.IsEnabled = false;
+            ControllerStateChange(false);
             this.ProgressBar.Visibility = Visibility.Visible;
             this.ScanIPBtn.Content = "Stop";
             var args = new object[2];
@@ -235,15 +220,7 @@ public sealed partial class MainWindow : Window
 
     private void _worker_RunTaskCompleted(object sender, RunWorkerCompletedEventArgs e)
     {
-        this.GetValueBtn.IsEnabled = true;
-        this.GetNextBtn.IsEnabled = true;
-        this.AgentIP.IsEnabled = true;
-        this.OID_ComboBox.IsEnabled = true;
-        this.TimeOut.IsEnabled = true;
-        this.Community.IsEnabled = true;
-        this.IPBegin.IsEnabled = true;
-        this.IPEnd.IsEnabled = true;
-        this.GetBulkBtn.IsEnabled = true;
+        ControllerStateChange(true);
         this.ScanIPBtn.Content = "Scan";
         this.ProgressBar.Value = 0;
         this.ProgressBar.Visibility = Visibility.Collapsed;
@@ -264,4 +241,16 @@ public sealed partial class MainWindow : Window
         Properties.mibbrowser.Default.Save();
     }
 
+    private void ControllerStateChange(bool state)
+    {
+        this.GetValueBtn.IsEnabled = state;
+        this.GetNextBtn.IsEnabled = state;
+        this.AgentIP.IsEnabled = state;
+        this.OID_ComboBox.IsEnabled = state;
+        this.TimeOut.IsEnabled = state;
+        this.Community.IsEnabled = state;
+        this.IPBegin.IsEnabled = state;
+        this.IPEnd.IsEnabled = state;
+        this.GetBulkBtn.IsEnabled = state;
+    }
 }
