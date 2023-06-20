@@ -44,7 +44,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.Row="2">
                     <TextBlock Text="OID" FontSize="16" Margin="10,0,10,0" VerticalAlignment="Center"/>
-                    <ComboBox x:Name="OID_ComboBox" IsEditable="True" Width="311" ItemsSource="{x:Bind Browser.OID_History}" MaxDropDownHeight="30"/>
+                    <ComboBox x:Name="OID_ComboBox" IsEditable="True" Width="311" ItemsSource="{x:Bind Browser.OID_History}" MaxDropDownHeight="40"/>
                     <Button Margin="10,0,0,0" x:Name="GetBulkBtn" Content="Get Bulk" Style="{ThemeResource AccentButtonStyle}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.Row="3">

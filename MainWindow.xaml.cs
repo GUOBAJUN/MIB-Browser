@@ -6,6 +6,7 @@ using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using WinRT;
 using WinRT.Interop;
 
@@ -14,7 +15,7 @@ using WinRT.Interop;
 
 namespace MIB_Browser;
 /// <summary>
-/// An empty window that can be used on its own or navigated to within a Frame.
+/// MIB Browser主界面
 /// </summary>
 public sealed partial class MainWindow : Window
 {
@@ -29,25 +30,19 @@ public sealed partial class MainWindow : Window
         get; set;
     }
 
-    private WindowsSystemDispatcherQueueHelper m_wsdqHelper;
-    private Microsoft.UI.Composition.SystemBackdrops.DesktopAcrylicController m_acrylicController;
-    private Microsoft.UI.Composition.SystemBackdrops.SystemBackdropConfiguration m_configuarationSource;
-
     public MainWindow()
     {
         this.InitializeComponent();
-
-        TrySetAcrylicBackdrop();
-
+        // 启用Acyclic材质
+        this.SystemBackdrop = new DesktopAcrylicBackdrop();
         // 配置BackgroundWorker
         _worker.WorkerSupportsCancellation = true;
         _worker.WorkerReportsProgress = true;
         _worker.DoWork += _worker_ScanIPRange;
         _worker.ProgressChanged += _worker_ProgressChanged;
         _worker.RunWorkerCompleted += _worker_RunTaskCompleted;
-
+        // 获取UI线程上下文
         Context = SynchronizationContext.Current;
-
         // 设置标题栏
         this.ExtendsContentIntoTitleBar = true;
         this.SetTitleBar(AppTitleBar);
@@ -61,6 +56,7 @@ public sealed partial class MainWindow : Window
         Browser = new MIB_Browser(ip: Properties.mibbrowser.Default.AgentIP, community: Properties.mibbrowser.Default.Community, timeout: (int)Properties.mibbrowser.Default.TimeOut, maxRepetitions: (int)Properties.mibbrowser.Default.MaxRepetitions);
         this.OID_ComboBox.SelectedIndex = 0;
         // 绑定事件响应函数
+        this.Closed += MainWindow_Closed;
         this.AgentIP.TextChanged += AgentIP_Changed;
         this.OID_ComboBox.TextSubmitted += OID_Changed;
         this.Community.TextChanged += Community_Changed;
@@ -84,13 +80,15 @@ public sealed partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            ContentDialog dialog = new();
-            dialog.XamlRoot = this.Content.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = ex.Message;
-            dialog.Content = ex.GetType().ToString();
-            dialog.CloseButtonText = "Close";
-            dialog.DefaultButton = ContentDialogButton.Close;
+            ContentDialog dialog = new()
+            {
+                XamlRoot = this.Content.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = ex.Message,
+                Content = ex.GetType().ToString(),
+                CloseButtonText = "Close",
+                DefaultButton = ContentDialogButton.Close
+            };
             _ = dialog.ShowAsync();
         }
     }
@@ -110,13 +108,15 @@ public sealed partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            ContentDialog dialog = new();
-            dialog.XamlRoot = this.Content.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = ex.Message;
-            dialog.Content = ex.GetType().ToString();
-            dialog.CloseButtonText = "Close";
-            dialog.DefaultButton = ContentDialogButton.Close;
+            ContentDialog dialog = new()
+            {
+                XamlRoot = this.Content.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = ex.Message,
+                Content = ex.GetType().ToString(),
+                CloseButtonText = "Close",
+                DefaultButton = ContentDialogButton.Close
+            };
             _ = dialog.ShowAsync();
         }
     }
@@ -138,13 +138,15 @@ public sealed partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            ContentDialog dialog = new();
-            dialog.XamlRoot = this.Content.XamlRoot;
-            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
-            dialog.Title = ex.Message;
-            dialog.Content = ex.GetType().ToString();
-            dialog.CloseButtonText = "Close";
-            dialog.DefaultButton = ContentDialogButton.Close;
+            ContentDialog dialog = new()
+            {
+                XamlRoot = this.Content.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = ex.Message,
+                Content = ex.GetType().ToString(),
+                CloseButtonText = "Close",
+                DefaultButton = ContentDialogButton.Close
+            };
             _ = dialog.ShowAsync();
         }
     }
@@ -223,6 +225,7 @@ public sealed partial class MainWindow : Window
                 worker.ReportProgress((int)((i - ip_begin + 1.0) / (ip_end - ip_begin + 1.0) * 100));
             }
         }
+        Browser.SetOID(Browser.OID_History[0]);
     }
 
     private void _worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -252,92 +255,13 @@ public sealed partial class MainWindow : Window
         Browser.SetOID(OID_ComboBox.SelectedValue.ToString());
     }
 
-    private void SetConfiguationSourecTheme()
-    {
-        switch (((FrameworkElement)this.Content).ActualTheme)
-        {
-            case ElementTheme.Dark: m_configuarationSource.Theme = Microsoft.UI.Composition.SystemBackdrops.SystemBackdropTheme.Dark; break;
-            case ElementTheme.Light: m_configuarationSource.Theme = Microsoft.UI.Composition.SystemBackdrops.SystemBackdropTheme.Light; break;
-            case ElementTheme.Default: m_configuarationSource.Theme = Microsoft.UI.Composition.SystemBackdrops.SystemBackdropTheme.Default; break;
-        }
-    }
-
-    private bool TrySetAcrylicBackdrop()
-    {
-        if (Microsoft.UI.Composition.SystemBackdrops.DesktopAcrylicController.IsSupported())
-        {
-            m_wsdqHelper = new();
-            m_wsdqHelper.EnsureWindowsSystemDispatcherQueueController();
-
-            m_configuarationSource = new();
-            this.Activated += MainWindow_Activated;
-            this.Closed += MainWindow_Closed;
-            ((FrameworkElement)this.Content).ActualThemeChanged += MainWindow_ActualThemeChanged;
-
-            m_configuarationSource.IsInputActive = true;
-            SetConfiguationSourecTheme();
-
-            m_acrylicController = new();
-            m_acrylicController.AddSystemBackdropTarget(this.As<Microsoft.UI.Composition.ICompositionSupportsSystemBackdrop>());
-            m_acrylicController.SetSystemBackdropConfiguration(m_configuarationSource);
-            return true;
-        }
-        return false;
-    }
-
-    private void MainWindow_ActualThemeChanged(FrameworkElement sender, object args)
-    {
-        if (m_configuarationSource != null)
-            SetConfiguationSourecTheme();
-    }
     private void MainWindow_Closed(object sender, WindowEventArgs args)
     {
-        if (m_acrylicController != null)
-        {
-            m_acrylicController.Dispose();
-            m_acrylicController = null;
-        }
-        this.Activated -= MainWindow_Activated;
-        m_configuarationSource = null;
-
         Properties.mibbrowser.Default.AgentIP = this.AgentIP.Text;
         Properties.mibbrowser.Default.Community = this.Community.Text;
         Properties.mibbrowser.Default.TimeOut = (int)this.TimeOut.Value;
         Properties.mibbrowser.Default.MaxRepetitions = (int)this.MaxRepetitions.Value;
         Properties.mibbrowser.Default.Save();
     }
-    private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
-    {
-        m_configuarationSource.IsInputActive = args.WindowActivationState != WindowActivationState.Deactivated;
-    }
-}
 
-public class WindowsSystemDispatcherQueueHelper
-{
-    [StructLayout(LayoutKind.Sequential)]
-    struct DispatcherQueueOptions
-    {
-        internal int dwSize;
-        internal int threadType;
-        internal int apartmentType;
-    }
-    [DllImport("CoreMessaging.dll")]
-    private static extern int CreateDispatcherQueueController([In] DispatcherQueueOptions options, [In, Out, MarshalAs(UnmanagedType.IUnknown)] ref object dispatcherQueueController);
-
-    object m_dispatcherQueueController = null;
-    public void EnsureWindowsSystemDispatcherQueueController()
-    {
-        if (Windows.System.DispatcherQueue.GetForCurrentThread() != null)
-        {
-            return;
-        }
-        if (m_dispatcherQueueController == null)
-        {
-            DispatcherQueueOptions options;
-            options.dwSize = Marshal.SizeOf(typeof(DispatcherQueueOptions));
-            options.threadType = 2;
-            options.apartmentType = 2;
-            CreateDispatcherQueueController(options, ref m_dispatcherQueueController);
-        }
-    }
 }

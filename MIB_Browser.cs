@@ -40,7 +40,7 @@ public class MIB_Browser
     {
         get; set;
     }
-    public MIB_Browser(string ip = "127.0.0.1", string oid = "1.3.6.1.2.1.1.5.0", string community = "public", int timeout = 2000, int maxRepetitions = 10)
+    public MIB_Browser(string ip = "127.0.0.1", string oid = "1.3.6.1.2.1.1.1.0", string community = "public", int timeout = 2000, int maxRepetitions = 10)
     {
         IP = ip;
         OID = oid;
@@ -55,22 +55,22 @@ public class MIB_Browser
     {
         IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
         List<Variable> variables = new List<Variable>
-        {
-            new Variable(new ObjectIdentifier(OID))
-        };
+    {
+        new Variable(new ObjectIdentifier(OID))
+    };
         GetRequestMessage request = new GetRequestMessage(request_id++, VersionCode.V1, new OctetString(Community), variables);
         ISnmpMessage response;
         try
         {
             response = request.GetResponse(Timeout, receiver);
+            if (response != null)
+            {
+                return response.Pdu().Variables;
+            }
         }
         catch (Exception)
         {
             throw;
-        }
-        if (response != null)
-        {
-            return response.Pdu().Variables;
         }
         return null;
     }
@@ -79,22 +79,22 @@ public class MIB_Browser
     {
         IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
         List<Variable> variables = new List<Variable>
-        {
-            new Variable(new ObjectIdentifier(OID))
-        };
+    {
+        new Variable(new ObjectIdentifier(OID))
+    };
         GetNextRequestMessage request = new GetNextRequestMessage(request_id++, VersionCode.V1, new OctetString(Community), variables);
         ISnmpMessage response;
         try
         {
             response = request.GetResponse(Timeout, receiver);
+            if (response != null)
+            {
+                return response.Pdu().Variables;
+            }
         }
         catch (Exception)
         {
             throw;
-        }
-        if (response != null)
-        {
-            return response.Pdu().Variables;
         }
         return null;
     }
@@ -111,12 +111,12 @@ public class MIB_Browser
         try
         {
             response = request.GetResponse(Timeout, receiver);
+            if (response != null)
+            {
+                return response.Pdu().Variables;
+            }
         }
         catch (Exception) { throw; }
-        if (response != null)
-        {
-            return response.Pdu().Variables;
-        }
         return null;
     }
 
