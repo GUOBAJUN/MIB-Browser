@@ -1,13 +1,11 @@
 using System;
 using System.ComponentModel;
-using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using WinRT;
 using WinRT.Interop;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -19,8 +17,14 @@ namespace MIB_Browser;
 /// </summary>
 public sealed partial class MainWindow : Window
 {
-    private MIB_Browser Browser { get; set; }
-    private SynchronizationContext Context { get; set; }
+    private MIB_Browser Browser
+    {
+        get; set;
+    }
+    private SynchronizationContext Context
+    {
+        get; set;
+    }
     private readonly BackgroundWorker _worker = new();
 
     public MainWindow()
@@ -124,7 +128,7 @@ public sealed partial class MainWindow : Window
         ControllerStateChange(false);
         try
         {
-            var variables =  await Browser.GetNextRequestAsync();
+            var variables = await Browser.GetNextRequestAsync();
             foreach (var variable in variables)
             {
                 AppendResult("[" + variable.Id + "] " + variable.Data + "\n");
@@ -251,7 +255,7 @@ public sealed partial class MainWindow : Window
 
     private void ControllerStateChange(bool state)
     {
-        this.ScanIPBtn.IsEnabled=state;
+        this.ScanIPBtn.IsEnabled = state;
         this.GetValueBtn.IsEnabled = state;
         this.GetNextBtn.IsEnabled = state;
         this.AgentIP.IsEnabled = state;
