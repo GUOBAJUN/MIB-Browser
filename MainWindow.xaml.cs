@@ -61,11 +61,13 @@ public sealed partial class MainWindow : Window
         this.GetBulkBtn.Click += GetBulkBtn_Click;
     }
 
-    private void GetBulkBtn_Click(object sender, RoutedEventArgs e)
+    private async void GetBulkBtn_Click(object sender, RoutedEventArgs e)
     {
+        ControllerStateChange(false);
         try
         {
-            var variables = Browser.GetBulk();
+            var variables = await Browser.GetBulkAsync();
+            if (variables == null) return;
             foreach (var variable in variables)
             {
                 AppendResult("[" + variable.Id + "] " + variable.Data + "\n");
@@ -82,15 +84,17 @@ public sealed partial class MainWindow : Window
                 CloseButtonText = "Close",
                 DefaultButton = ContentDialogButton.Close
             };
-            try { _ = dialog.ShowAsync(); } catch { }
+            await dialog.ShowAsync();
         }
+        finally { ControllerStateChange(true); }
     }
 
-    private void GetValueBtn_Click(object sender, RoutedEventArgs e)
+    private async void GetValueBtn_Click(object sender, RoutedEventArgs e)
     {
+        ControllerStateChange(false);
         try
         {
-            var variables = Browser.GetRequest();
+            var variables = await Browser.GetRequestAsync();
             foreach (var variable in variables)
             {
                 AppendResult("[" + variable.Id + "] " + variable.Data + "\n");
@@ -110,15 +114,17 @@ public sealed partial class MainWindow : Window
                 CloseButtonText = "Close",
                 DefaultButton = ContentDialogButton.Close
             };
-            try { _ = dialog.ShowAsync(); } catch { }
+            await dialog.ShowAsync();
         }
+        finally { ControllerStateChange(true); }
     }
 
-    private void GetNextBtn_Click(object sender, RoutedEventArgs e)
+    private async void GetNextBtn_Click(object sender, RoutedEventArgs e)
     {
+        ControllerStateChange(false);
         try
         {
-            var variables = Browser.GetNextRequest();
+            var variables =  await Browser.GetNextRequestAsync();
             foreach (var variable in variables)
             {
                 AppendResult("[" + variable.Id + "] " + variable.Data + "\n");
@@ -140,8 +146,9 @@ public sealed partial class MainWindow : Window
                 CloseButtonText = "Close",
                 DefaultButton = ContentDialogButton.Close
             };
-            try { _ = dialog.ShowAsync(); } catch { }
+            await dialog.ShowAsync();
         }
+        finally { ControllerStateChange(true); }
     }
 
     private void ScanIPBtn_Click(object sender, RoutedEventArgs e)
@@ -151,6 +158,7 @@ public sealed partial class MainWindow : Window
             ControllerStateChange(false);
             this.ProgressBar.Visibility = Visibility.Visible;
             this.ScanIPBtn.Content = "Stop";
+            this.ScanIPBtn.IsEnabled = true;
             var args = new object[2];
             args[0] = this.IPBegin.Text;
             args[1] = this.IPEnd.Text;
@@ -243,6 +251,7 @@ public sealed partial class MainWindow : Window
 
     private void ControllerStateChange(bool state)
     {
+        this.ScanIPBtn.IsEnabled=state;
         this.GetValueBtn.IsEnabled = state;
         this.GetNextBtn.IsEnabled = state;
         this.AgentIP.IsEnabled = state;

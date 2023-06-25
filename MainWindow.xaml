@@ -34,7 +34,7 @@
                     <TextBlock Text="Agent IP" FontSize="16" Margin="10,0,10,0" VerticalAlignment="Center"/>
                     <TextBox x:Name="AgentIP" Width="157" Height="32" Text="{x:Bind settings:mibbrowser.Default.AgentIP}" PlaceholderText="127.0.0.1" FontWeight="SemiBold"/>
                     <TextBlock Text="Time Out" FontSize="16" Margin="10,0,10,0" VerticalAlignment="Center"/>
-                    <NumberBox x:Name="TimeOut" Value="{x:Bind settings:mibbrowser.Default.TimeOut}" SpinButtonPlacementMode="Compact" Width="121" SmallChange="500" Minimum="1"/>
+                    <NumberBox x:Name="TimeOut" Width="121" Value="{x:Bind settings:mibbrowser.Default.TimeOut}" SpinButtonPlacementMode="Compact"  SmallChange="500" Minimum="1"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.Row="1">
                     <TextBlock Text="Community" FontSize="16" Margin="10,0,10,0" VerticalAlignment="Center"/>

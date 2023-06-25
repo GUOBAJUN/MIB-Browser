@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net;
+using System.Threading.Tasks;
 using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpLib.Messaging;
 
@@ -53,6 +54,27 @@ public class MIB_Browser
         return null;
     }
 
+    public async Task<IList<Variable>> GetRequestAsync()
+    {
+        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
+        List<Variable> variables = new List<Variable>
+        {
+            new Variable(new ObjectIdentifier(OID))
+        };
+        GetRequestMessage request = new GetRequestMessage(request_id++, VersionCode.V1, new OctetString(Community), variables);
+        ISnmpMessage response;
+        try
+        {
+            response = await request.GetResponseAsync(receiver,new System.Threading.CancellationTokenSource(Timeout).Token);
+            if (response != null)
+            {
+                return response.Pdu().Variables;
+            }
+        }
+        catch (Exception) { throw; }
+        return null;
+    }
+
     public IList<Variable> GetNextRequest()
     {
         IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
@@ -74,6 +96,27 @@ public class MIB_Browser
         return null;
     }
 
+    public async Task<IList<Variable>> GetNextRequestAsync()
+    {
+        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
+        List<Variable> variables = new List<Variable>
+    {
+        new Variable(new ObjectIdentifier(OID))
+    };
+        GetNextRequestMessage request = new GetNextRequestMessage(request_id++, VersionCode.V1, new OctetString(Community), variables);
+        ISnmpMessage response;
+        try
+        {
+            response = await request.GetResponseAsync(receiver, new System.Threading.CancellationTokenSource(Timeout).Token);
+            if (response != null)
+            {
+                return response.Pdu().Variables;
+            }
+        }
+        catch (Exception) { throw; }
+        return null;
+    }
+
     public IList<Variable> GetBulk()
     {
         IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
@@ -86,6 +129,27 @@ public class MIB_Browser
         try
         {
             response = request.GetResponse(Timeout, receiver);
+            if (response != null)
+            {
+                return response.Pdu().Variables;
+            }
+        }
+        catch (Exception) { throw; }
+        return null;
+    }
+
+    public async Task<IList<Variable>> GetBulkAsync()
+    {
+        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
+        List<Variable> variables = new List<Variable>
+        {
+            new Variable (new ObjectIdentifier(OID))
+        };
+        GetBulkRequestMessage request = new GetBulkRequestMessage(request_id++, VersionCode.V2, new OctetString(Community), 0, MaxRepetitions, variables);
+        ISnmpMessage response;
+        try
+        {
+            response = await request.GetResponseAsync(receiver, new System.Threading.CancellationTokenSource(Timeout).Token);
             if (response != null)
             {
                 return response.Pdu().Variables;
