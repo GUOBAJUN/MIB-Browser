@@ -64,14 +64,14 @@ public sealed partial class MainWindow : Window
         this.GetNextBtn.Click += GetNextBtn_Click;
         this.ScanIPBtn.Click += ScanIPBtn_Click;
         this.GetBulkBtn.Click += GetBulkBtn_Click;
-        this.GetTableBtn.Click += GetTableBtn_Click;
+        this.GetTreeBtn.Click += GetTreeBtn_Click;
     }
 
-    private async void GetTableBtn_Click(object sender, RoutedEventArgs e)
+    private async void GetTreeBtn_Click(object sender, RoutedEventArgs e)
     {
         try
         {
-            var variables = await Browser.GetTableAsync();
+            var variables = await Browser.GetTreeAsync();
             if (variables == null) return;
             foreach (var variable in variables)
             {

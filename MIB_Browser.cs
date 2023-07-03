@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Lextm.SharpSnmpLib;
@@ -119,26 +120,27 @@ public class MIB_Browser
         return null;
     }
 
-    public IList<Variable> GetTable()
+    public async Task<List<Variable>> GetTreeAsync()
     {
-        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
-        IList<Variable> variables = new List<Variable>();
+        List<Variable> variables = new List<Variable>();
+        var Father = OID;
         try
         {
-            var response = Messenger.BulkWalk(VersionCode.V2, receiver, new OctetString(Community), new OctetString(""), new ObjectIdentifier(OID), variables, Timeout, MaxRepetitions, WalkMode.WithinSubtree, null, null);
-            return variables;
-        }
-        catch (Exception) { throw; }
-    }
-
-    public async Task<IList<Variable>> GetTableAsync()
-    {
-        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
-        IList<Variable> variables = new List<Variable>();
-        try
-        {
-            var result = await Messenger.BulkWalkAsync(VersionCode.V2, receiver, new OctetString(Community), new OctetString(""), new ObjectIdentifier(OID), variables, MaxRepetitions, WalkMode.WithinSubtree, null, null, new System.Threading.CancellationTokenSource(Timeout).Token);
-            return variables;
+            do
+            {
+                var result = await GetBulkAsync();
+                if (result != null)
+                {
+                    foreach (var variable in result)
+                    {
+                        if (variable.Id.ToString().StartsWith(Father))
+                            variables.Add(variable);
+                        else
+                            return variables;
+                    }
+                }
+                OID = result.Last().Id.ToString();
+            } while (true);
         }
         catch (Exception) { throw; }
     }
