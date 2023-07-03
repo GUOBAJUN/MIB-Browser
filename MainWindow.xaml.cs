@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Net.NetworkInformation;
 using System.Threading;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
@@ -63,6 +64,33 @@ public sealed partial class MainWindow : Window
         this.GetNextBtn.Click += GetNextBtn_Click;
         this.ScanIPBtn.Click += ScanIPBtn_Click;
         this.GetBulkBtn.Click += GetBulkBtn_Click;
+        this.GetTableBtn.Click += GetTableBtn_Click;
+    }
+
+    private async void GetTableBtn_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var variables = await Browser.GetTableAsync();
+            if (variables == null) return;
+            foreach (var variable in variables)
+            {
+                AppendResult("[" + variable.Id + "] " + variable.Data + "\n");
+            }
+        }
+        catch (Exception ex)
+        {
+            ContentDialog dialog = new()
+            {
+                XamlRoot = this.Content.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = ex.Message,
+                Content = ex.GetType().ToString(),
+                CloseButtonText = "Close",
+                DefaultButton = ContentDialogButton.Close
+            };
+            await dialog.ShowAsync();
+        }
     }
 
     private async void GetBulkBtn_Click(object sender, RoutedEventArgs e)
@@ -201,6 +229,7 @@ public sealed partial class MainWindow : Window
         }
         if (ip_begin > ip_end) { return; }
         Browser.SetOID("1.3.6.1.2.1.1.5.0");
+        Ping pingsender = new();
         for (var i = ip_begin; i <= ip_end; i++)
         {
             if (worker.CancellationPending)
@@ -209,18 +238,26 @@ public sealed partial class MainWindow : Window
                 break;
             }
             var addr = MIB_Browser.UINTtoIP(i);
-            Browser.SetIP(addr);
-            try
-            {
-                var variables = Browser.GetRequest();
-                foreach (var variable in variables)
-                    Context.Post(AppendResult, addr + " is online. Hostname: " + variable.Data + "\n");
+
+            var reply = pingsender.Send(addr, 500);
+            if (reply.Status == IPStatus.Success) { 
+                Browser.SetIP(addr);
+                try
+                {
+                    var variables = Browser.GetRequest();
+                    foreach (var variable in variables)
+                        Context.Post(AppendResult, addr + " is online. Hostname: " + variable.Data + "\n");
+                }
+                catch {
+                    Context.Post(AppendResult, addr + " is online. But SNMP request can NOT reach.\n");
+                }
+                finally
+                {
+                    worker.ReportProgress((int)((i - ip_begin + 1.0) / (ip_end - ip_begin + 1.0) * 100));
+                }
             }
-            catch { }
-            finally
-            {
+            else
                 worker.ReportProgress((int)((i - ip_begin + 1.0) / (ip_end - ip_begin + 1.0) * 100));
-            }
         }
         Browser.SetOID(Browser.OID_History[0]);
     }

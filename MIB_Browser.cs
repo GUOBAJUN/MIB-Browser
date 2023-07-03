@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net;
 using System.Threading.Tasks;
 using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpLib.Messaging;
+using Windows.Security.Isolation;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -36,10 +38,10 @@ public class MIB_Browser
     public IList<Variable> GetRequest()
     {
         IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
-        List<Variable> variables = new List<Variable>
-    {
-        new Variable(new ObjectIdentifier(OID))
-    };
+        IList<Variable> variables = new List<Variable>
+        {
+            new Variable(new ObjectIdentifier(OID))
+        };
         GetRequestMessage request = new GetRequestMessage(request_id++, VersionCode.V1, new OctetString(Community), variables);
         ISnmpMessage response;
         try
@@ -57,7 +59,7 @@ public class MIB_Browser
     public async Task<IList<Variable>> GetRequestAsync()
     {
         IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
-        List<Variable> variables = new List<Variable>
+        IList<Variable> variables = new List<Variable>
         {
             new Variable(new ObjectIdentifier(OID))
         };
@@ -78,10 +80,10 @@ public class MIB_Browser
     public IList<Variable> GetNextRequest()
     {
         IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
-        List<Variable> variables = new List<Variable>
-    {
-        new Variable(new ObjectIdentifier(OID))
-    };
+        IList<Variable> variables = new List<Variable>
+        {
+            new Variable(new ObjectIdentifier(OID))
+        };
         GetNextRequestMessage request = new GetNextRequestMessage(request_id++, VersionCode.V1, new OctetString(Community), variables);
         ISnmpMessage response;
         try
@@ -99,10 +101,10 @@ public class MIB_Browser
     public async Task<IList<Variable>> GetNextRequestAsync()
     {
         IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
-        List<Variable> variables = new List<Variable>
-    {
-        new Variable(new ObjectIdentifier(OID))
-    };
+        IList<Variable> variables = new List<Variable>
+        {
+            new Variable(new ObjectIdentifier(OID))
+        };
         GetNextRequestMessage request = new GetNextRequestMessage(request_id++, VersionCode.V1, new OctetString(Community), variables);
         ISnmpMessage response;
         try
@@ -117,10 +119,34 @@ public class MIB_Browser
         return null;
     }
 
+    public IList<Variable> GetTable()
+    {
+        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
+        IList<Variable> variables = new List<Variable>();
+        try
+        {
+            var response = Messenger.BulkWalk(VersionCode.V2, receiver, new OctetString(Community), new OctetString(""), new ObjectIdentifier(OID), variables, Timeout, MaxRepetitions, WalkMode.WithinSubtree, null, null);
+            return variables;
+        }
+        catch (Exception) { throw; }
+    }
+
+    public async Task<IList<Variable>> GetTableAsync()
+    {
+        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
+        IList<Variable> variables = new List<Variable>();
+        try
+        {
+            var result = await Messenger.BulkWalkAsync(VersionCode.V2, receiver, new OctetString(Community), new OctetString(""), new ObjectIdentifier(OID), variables, MaxRepetitions, WalkMode.WithinSubtree, null, null, new System.Threading.CancellationTokenSource(Timeout).Token);
+            return variables;
+        }
+        catch (Exception) { throw; }
+    }
+
     public IList<Variable> GetBulk()
     {
         IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
-        List<Variable> variables = new List<Variable>
+        IList<Variable> variables = new List<Variable>
         {
             new Variable (new ObjectIdentifier(OID))
         };
@@ -141,7 +167,7 @@ public class MIB_Browser
     public async Task<IList<Variable>> GetBulkAsync()
     {
         IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
-        List<Variable> variables = new List<Variable>
+        IList<Variable> variables = new List<Variable>
         {
             new Variable (new ObjectIdentifier(OID))
         };
@@ -158,7 +184,6 @@ public class MIB_Browser
         catch (Exception) { throw; }
         return null;
     }
-
     public static uint IPtoUINT(string addr)
     {
         if (!IPAddress.TryParse(addr, out var ip)) return 0;
