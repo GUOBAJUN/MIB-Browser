@@ -13,6 +13,10 @@
     <DefaultLanguage>zh-cn</DefaultLanguage>
     <PackageCertificateThumbprint>9720A1C8CE0E4091BD2D07195581509446FA8D46</PackageCertificateThumbprint>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <PlatformTarget>ARM32</PlatformTarget>
+    <Description>基于SNMP协议的数据读取程序</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -50,6 +54,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Update="LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Update="Properties\mibbrowser.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>mibbrowser.Designer.cs</LastGenOutput>
