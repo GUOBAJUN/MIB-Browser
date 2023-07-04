@@ -16,12 +16,12 @@ namespace MIB_Browser;
 
 public class MIB_Browser
 {
-    private string IP { get; set; }
-    private string OID { get; set; }
-    private string Community { get; set; }
-    private int Timeout { get; set; }
-    private int MaxRepetitions { get; set; }
-    private int request_id = 0;
+    public string IP { get; set; }
+    public string OID { get; set; }
+    public string Community { get; set; }
+    public int Timeout { get; set; }
+    public int MaxRepetitions { get; set; }
+    public int request_id = 0;
 
     public ObservableCollection<string> OID_History { get; set; }
 
@@ -204,12 +204,6 @@ public class MIB_Browser
         return string.Format("{0}.{1}.{2}.{3}", addr1, addr2, addr3, addr4);
     }
 
-    public void SetIP(string ip) => IP = ip;
-    public void SetOID(string oid) => OID = oid;
-    public void SetCommunity(string community) => Community = community;
-    public void SetTimeout(int timeout) => Timeout = timeout;
-    public void SetMaxRepetitions(int maxRepetitions) => MaxRepetitions = maxRepetitions;
-    public string GetOID() => OID;
     public override string ToString()
     {
         return IP + ":" + OID + ":" + Community + ":" + Timeout;

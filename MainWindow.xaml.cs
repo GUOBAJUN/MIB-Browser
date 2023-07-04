@@ -163,7 +163,7 @@ public sealed partial class MainWindow : Window
                 this.Browser.OID_History.Remove(variable.Id.ToString());
                 this.Browser.OID_History.Insert(0, variable.Id.ToString());
                 this.OID_ComboBox.SelectedIndex = 0;
-                this.Browser.SetOID(variable.Id.ToString());
+                this.Browser.OID = variable.Id.ToString();
             }
             this.OID_ComboBox.SelectedIndex = 0;
         }
@@ -210,11 +210,11 @@ public sealed partial class MainWindow : Window
         this.ResultsScollViewer.ScrollToVerticalOffset(ResultsTextBlock.ActualHeight);
     }
 
-    private void OID_Changed(ComboBox sender, ComboBoxTextSubmittedEventArgs e) => Browser?.SetOID(this.OID_ComboBox.Text);
-    private void AgentIP_Changed(object sender, TextChangedEventArgs e) => Browser?.SetIP(this.AgentIP.Text);
-    private void Community_Changed(object sender, TextChangedEventArgs e) => Browser?.SetCommunity(this.Community.Text);
-    private void TimeOut_Changed(NumberBox sender, NumberBoxValueChangedEventArgs e) => Browser?.SetTimeout((int)this.TimeOut.Value);
-    private void MaxRepetition_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs e) => this.Browser.SetMaxRepetitions((int)this.MaxRepetitions.Value);
+    private void OID_Changed(ComboBox sender, ComboBoxTextSubmittedEventArgs e) => Browser.OID =this.OID_ComboBox.Text;
+    private void AgentIP_Changed(object sender, TextChangedEventArgs e) => Browser.IP=this.AgentIP.Text;
+    private void Community_Changed(object sender, TextChangedEventArgs e) => Browser.Community = this.Community.Text;
+    private void TimeOut_Changed(NumberBox sender, NumberBoxValueChangedEventArgs e) => Browser.Timeout = (int)this.TimeOut.Value;
+    private void MaxRepetition_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs e) => this.Browser.MaxRepetitions = (int)this.MaxRepetitions.Value;
 
 
     private void _worker_ScanIPRange(object sender, DoWorkEventArgs e)
@@ -228,7 +228,7 @@ public sealed partial class MainWindow : Window
             return;
         }
         if (ip_begin > ip_end) { return; }
-        Browser.SetOID("1.3.6.1.2.1.1.5.0");
+        Browser.OID = "1.3.6.1.2.1.1.5.0";
         Ping pingsender = new();
         for (var i = ip_begin; i <= ip_end; i++)
         {
@@ -241,7 +241,7 @@ public sealed partial class MainWindow : Window
 
             var reply = pingsender.Send(addr, 500);
             if (reply.Status == IPStatus.Success) { 
-                Browser.SetIP(addr);
+                Browser.IP = addr;
                 try
                 {
                     var variables = Browser.GetRequest();
@@ -259,7 +259,7 @@ public sealed partial class MainWindow : Window
             else
                 worker.ReportProgress((int)((i - ip_begin + 1.0) / (ip_end - ip_begin + 1.0) * 100));
         }
-        Browser.SetOID(Browser.OID_History[0]);
+        Browser.OID = Browser.OID_History[0];
     }
 
     private void _worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -277,8 +277,8 @@ public sealed partial class MainWindow : Window
         {
             this.ScanIPBtn.IsEnabled = true;
         }
-        Browser.SetIP(this.AgentIP.Text);
-        Browser.SetOID(OID_ComboBox.SelectedValue.ToString());
+        Browser.IP = this.AgentIP.Text;
+        Browser.OID = OID_ComboBox.SelectedValue.ToString();
     }
 
     private void MainWindow_Closed(object sender, WindowEventArgs args)
@@ -301,6 +301,7 @@ public sealed partial class MainWindow : Window
         this.Community.IsEnabled = state;
         this.IPBegin.IsEnabled = state;
         this.IPEnd.IsEnabled = state;
+        this.GetTreeBtn.IsEnabled = state;
         this.GetBulkBtn.IsEnabled = state;
     }
 }
