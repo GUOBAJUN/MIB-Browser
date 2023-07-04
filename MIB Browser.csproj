@@ -15,7 +15,7 @@
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <PlatformTarget>ARM32</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <Description>基于SNMP协议的数据读取程序</Description>
   </PropertyGroup>
 
