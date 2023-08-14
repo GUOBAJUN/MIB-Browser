@@ -14,31 +14,27 @@ using Windows.Security.Isolation;
 
 namespace MIB_Browser;
 
-public class MIB_Browser
+public class MibBrowser
 {
-    public string IP { get; set; }
+    public string AgentIP { get; set; }
     public string OID { get; set; }
     public string Community { get; set; }
     public int Timeout { get; set; }
     public int MaxRepetitions { get; set; }
     public int request_id = 0;
 
-    public ObservableCollection<string> OID_History { get; set; }
-
-    public MIB_Browser(string ip = "127.0.0.1", string oid = "1.3.6.1.2.1.1.1.0", string community = "public", int timeout = 2000, int maxRepetitions = 10)
+    public MibBrowser(string agentIP = "127.0.0.1", string oid = "1.3.6.1.2.1.1.1.0", string community = "public", int timeout = 2000, int maxRepetitions = 10)
     {
-        IP = ip;
+        AgentIP = agentIP;
         OID = oid;
         Community = community;
         Timeout = timeout;
-        OID_History = new ObservableCollection<string>();
-        OID_History.Insert(0, oid);
         MaxRepetitions = maxRepetitions;
     }
 
     public IList<Variable> GetRequest()
     {
-        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
+        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(AgentIP), 161);
         IList<Variable> variables = new List<Variable>
         {
             new Variable(new ObjectIdentifier(OID))
@@ -59,7 +55,7 @@ public class MIB_Browser
 
     public async Task<IList<Variable>> GetRequestAsync()
     {
-        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
+        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(AgentIP), 161);
         IList<Variable> variables = new List<Variable>
         {
             new Variable(new ObjectIdentifier(OID))
@@ -80,7 +76,7 @@ public class MIB_Browser
 
     public IList<Variable> GetNextRequest()
     {
-        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
+        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(AgentIP), 161);
         IList<Variable> variables = new List<Variable>
         {
             new Variable(new ObjectIdentifier(OID))
@@ -101,7 +97,7 @@ public class MIB_Browser
 
     public async Task<IList<Variable>> GetNextRequestAsync()
     {
-        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
+        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(AgentIP), 161);
         IList<Variable> variables = new List<Variable>
         {
             new Variable(new ObjectIdentifier(OID))
@@ -118,6 +114,31 @@ public class MIB_Browser
         }
         catch (Exception) { throw; }
         return null;
+    }
+
+    public List<Variable> GetTree()
+    {
+        List<Variable> variables = new List<Variable>();
+        var Father = OID;
+        try
+        {
+            do
+            {
+                var result = GetBulk();
+                if (result != null)
+                {
+                    foreach (var variable in result)
+                    {
+                        if (variable.Id.ToString().StartsWith(Father))
+                            variables.Add(variable);
+                        else
+                            return variables;
+                    }
+                }
+                OID = result.Last().Id.ToString();
+            } while (true);
+        }
+        catch (Exception) { throw; }
     }
 
     public async Task<List<Variable>> GetTreeAsync()
@@ -147,7 +168,7 @@ public class MIB_Browser
 
     public IList<Variable> GetBulk()
     {
-        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
+        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(AgentIP), 161);
         IList<Variable> variables = new List<Variable>
         {
             new Variable (new ObjectIdentifier(OID))
@@ -168,7 +189,7 @@ public class MIB_Browser
 
     public async Task<IList<Variable>> GetBulkAsync()
     {
-        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(IP), 161);
+        IPEndPoint receiver = new IPEndPoint(IPAddress.Parse(AgentIP), 161);
         IList<Variable> variables = new List<Variable>
         {
             new Variable (new ObjectIdentifier(OID))
@@ -206,6 +227,6 @@ public class MIB_Browser
 
     public override string ToString()
     {
-        return IP + ":" + OID + ":" + Community + ":" + Timeout;
+        return AgentIP + ":" + OID + ":" + Community + ":" + Timeout;
     }
 }

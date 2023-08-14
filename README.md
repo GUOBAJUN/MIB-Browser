@@ -10,8 +10,9 @@
 # 开发环境
 - Visual Studio 2022 ver 17.6.4
 - WindowsAppSDK(WinUI3) ver 1.3.230602002
+# 新进展
+1. 采用MVVM开发模式重构了代码。
+2. 采用了全新MicaAlt材质作为背景。
+3. 去除了任务栏烦人的背景色。
 # 未来规划
-1. 升级BackgroundWorker所承担的功能。将async/await事件响应迁移到BackgroundWorker中；改进进度条。
-2. 将Mainwindow内的控件迁移到新的Page中
-3. 设计开屏界面和关于界面
-4. 持续优化代码，使其符合C#开发规范
+1. 持续完善功能

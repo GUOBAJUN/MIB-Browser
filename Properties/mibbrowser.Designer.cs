@@ -50,7 +50,7 @@ namespace MIB_Browser.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("2000")]
-        public int TimeOut {
+        public int Timeout {
             get {
                 return ((int)(this["TimeOut"]));
             }

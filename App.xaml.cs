@@ -28,5 +28,5 @@ public partial class App : Application
         m_window.Activate();
     }
 
-    private Window m_window;
+    public Window m_window;
 }
