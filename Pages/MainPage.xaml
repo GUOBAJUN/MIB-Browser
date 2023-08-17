@@ -9,14 +9,30 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
+    Unloaded="MainPage_Unloaded"
     >
-    
-    <Grid ColumnSpacing="10">
+    <Page.Resources>
+        <ResourceDictionary>
+            <Style TargetType="TextBlock" BasedOn="{StaticResource BodyStrongTextBlockStyle}">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+            <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBoxStyle}">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+            <Style TargetType="Grid">
+                <Setter Property="ColumnSpacing" Value="10"/>
+                <Setter Property="RowSpacing" Value="5"/>
+            </Style>
+        </ResourceDictionary>
+    </Page.Resources>
+
+
+    <Grid Margin="5">
         <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="180"/>
         </Grid.ColumnDefinitions>
-        <Grid Grid.Column="0" RowSpacing="5" HorizontalAlignment="Stretch">
+        <Grid Grid.Column="0" Padding="5, 0" HorizontalAlignment="Stretch">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="40"/>
@@ -31,9 +47,9 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="Agent IP" FontSize="16" Margin="10,0,10,0" VerticalAlignment="Center"/>
-                <TextBox Grid.Column="1" Height="32" Text="{x:Bind viewModel.AgentIP, Mode=TwoWay}" VerticalAlignment="Center" PlaceholderText="127.0.0.1" FontWeight="SemiBold"/>
-                <TextBlock Grid.Column="2" Text="Timeout" FontSize="16" Margin="10,0,10,0" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="0" Text="Agent IP"/>
+                <TextBox Grid.Column="1" Text="{x:Bind viewModel.AgentIP, Mode=TwoWay}" VerticalAlignment="Center" PlaceholderText="127.0.0.1" FontWeight="SemiBold"/>
+                <TextBlock Grid.Column="2" Text="Timeout"/>
                 <NumberBox Grid.Column="3" Value="{x:Bind viewModel.Timeout, Mode=TwoWay}" SpinButtonPlacementMode="Compact" VerticalAlignment="Center" SmallChange="500" Minimum="1"/>
             </Grid>
             <Grid Grid.Row="1">
@@ -43,9 +59,9 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="Community" FontSize="16" Margin="10,0,10,0" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="0" Text="Community"/>
                 <TextBox Grid.Column="1" Text="{x:Bind viewModel.Community, Mode=TwoWay}" PlaceholderText="Community Name" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="2" Text="MaxRepetitions" FontSize="16" Margin="10,0,3,0" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="2" Text="MaxRepetitions"/>
                 <NumberBox Grid.Column="3" Value="{x:Bind viewModel.MaxRepetitions, Mode=TwoWay}" VerticalAlignment="Center"/>
             </Grid>
             <Grid Grid.Row="2">
@@ -54,9 +70,9 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="OID" FontSize="16" Margin="10,0,10,0" VerticalAlignment="Center"/>
-                <ComboBox Grid.Column="1" IsEditable="True" ItemsSource="{x:Bind viewModel.ObjectIDs, Mode=TwoWay}" SelectedValue="{x:Bind viewModel.SelectedValue, Mode=TwoWay}" SelectedIndex="{x:Bind viewModel.SelectedIndex, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Stretch" MaxDropDownHeight="40"/>
-                <Button Grid.Column="2" Margin="10,0,0,0" Content="Get Bulk" Command="{x:Bind viewModel.GetBulkCommand}" VerticalAlignment="Center" Style="{ThemeResource AccentButtonStyle}"/>
+                <TextBlock Grid.Column="0" Text="OID"/>
+                <ComboBox Grid.Column="1" IsEditable="True" ItemsSource="{x:Bind viewModel.ObjectIDs, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" SelectedValue="{x:Bind viewModel.SelectedValue, Mode=TwoWay}" SelectedIndex="{x:Bind viewModel.SelectedIndex, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Stretch" MaxDropDownHeight="40"/>
+                <Button Grid.Column="2" Content="Get Bulk" Command="{x:Bind viewModel.GetBulkCommand}" Style="{ThemeResource AccentButtonStyle}"/>
             </Grid>
             <Grid Grid.Row="3">
                 <Grid.ColumnDefinitions>
@@ -66,27 +82,37 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="IP Begin" FontSize="16" Margin="10,0,10,0" VerticalAlignment="Center"/>
-                <TextBox Grid.Column="1" Text="{x:Bind viewModel.IpBegin, Mode=TwoWay}" PlaceholderText="192.168.0.1" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="2" Text="IP End" FontSize="16" Margin="10,0,10,0" VerticalAlignment="Center"/>
-                <TextBox Grid.Column="3" Text="{x:Bind viewModel.IpEnd, Mode=TwoWay}" PlaceholderText="192.168.0.254" VerticalAlignment="Center"/>
-                <Button Grid.Column="4" Margin="10,0,0,0" Content="Scan" Style="{StaticResource AccentButtonStyle}" Command="{x:Bind viewModel.ScanCommand}" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="0" Text="IP Begin"/>
+                <TextBox Grid.Column="1" Text="{x:Bind viewModel.IpBegin, Mode=TwoWay}" PlaceholderText="192.168.0.1"/>
+                <TextBlock Grid.Column="2" Text="IP End"/>
+                <TextBox Grid.Column="3" Text="{x:Bind viewModel.IpEnd, Mode=TwoWay}" PlaceholderText="192.168.0.254"/>
+                <StackPanel Orientation="Horizontal" Grid.Column="4">
+                    <Button Margin="10,0" Content="Scan" Style="{StaticResource AccentButtonStyle}" Command="{x:Bind viewModel.ScanCommand}"/>
+                    <HyperlinkButton Content="Cancel" Command="{x:Bind viewModel.CancelCommand}"/>
+                </StackPanel>
             </Grid>
             <Grid Grid.Row="4" HorizontalAlignment="Stretch">
                 <Grid.RowDefinitions>
                     <RowDefinition MaxHeight="2"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <ProgressBar x:Name="ProgressBar" HorizontalAlignment="Stretch" IsIndeterminate="{x:Bind viewModel.ProgressbarIsIndeterminate, Mode=OneWay}" Value="{x:Bind viewModel.ProgressbarValue, FallbackValue=0, Mode=OneWay}" Margin="10,0,0,0" Grid.Row="0" Visibility="{x:Bind viewModel.ProgressbarVisibility, Mode=OneWay}"/>
-                <ScrollViewer Grid.Row="1" HorizontalAlignment="Stretch" Background="{ThemeResource LayerFillColorDefaultBrush}" Margin="5,5,0,5" CornerRadius="5">
-                    <TextBlock Text="{x:Bind viewModel.Text, Mode=OneWay}" IsTextSelectionEnabled="True" TextWrapping="Wrap" FontSize="15" Margin="10,5,10,5" CanBeScrollAnchor="True" ScrollViewer.IsVerticalRailEnabled="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollMode="Auto"/>
+                <ProgressBar HorizontalAlignment="Stretch" IsIndeterminate="{x:Bind viewModel.ProgressbarIsIndeterminate, Mode=OneWay}" Value="{x:Bind viewModel.ProgressbarValue, FallbackValue=0, Mode=OneWay}" Grid.Row="0" Visibility="{x:Bind viewModel.ProgressbarVisibility, Mode=OneWay}"/>
+                <ScrollViewer Grid.Row="1" HorizontalAlignment="Stretch" Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="4">
+                    <TextBlock Text="{x:Bind viewModel.Text, Mode=OneWay}" Style="{ThemeResource BodyTextBlockStyle}" Padding="5" IsTextSelectionEnabled="True" TextWrapping="Wrap" CanBeScrollAnchor="True" ScrollViewer.IsVerticalRailEnabled="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollMode="Auto" SizeChanged="TextBlock_SizeChanged"/>
                 </ScrollViewer>
             </Grid>
         </Grid>
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Grid.Column="1" Background="{ThemeResource LayerFillColorDefaultBrush}" Margin="5" CornerRadius="5">
-            <Button  Content="Get Value" Margin="49,10,0,10" Style="{StaticResource AccentButtonStyle}" Command="{x:Bind viewModel.GetValueCommand}"/>
-            <RepeatButton Content="Get Next" Margin="51,10,0,10" Command="{x:Bind viewModel.GetNextCommand}"/>
-            <Button Content="Get Tree" Margin="53,10,0,10" Command="{x:Bind viewModel.GetTreeCommand}"/>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Grid.Column="1" Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="4">
+            <StackPanel.Resources>
+                <Style BasedOn="{StaticResource DefaultButtonStyle}" TargetType="Button">
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                    <Setter Property="Margin" Value="0,10"/>
+                    <Setter Property="Width" Value="100"/>
+                </Style>
+            </StackPanel.Resources>
+            <Button Content="Get Value" Style="{ThemeResource AccentButtonStyle}" Width="100" HorizontalAlignment="Center" Margin="0,10" Command="{x:Bind viewModel.GetValueCommand}"/>
+            <Button Content="Get Next" Command="{x:Bind viewModel.GetNextCommand}"/>
+            <Button Content="Get Tree" Command="{x:Bind viewModel.GetTreeCommand}"/>
         </StackPanel>
     </Grid>
 </Page>

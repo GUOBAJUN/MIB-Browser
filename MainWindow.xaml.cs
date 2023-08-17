@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Net.NetworkInformation;
 using System.Threading;
 using MIB_Browser.Pages;
+using MIB_Browser.ViewModel;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;

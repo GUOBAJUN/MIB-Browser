@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -7,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Xml.Serialization;
-using MIB_Browser.Utilities;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml;
 
 namespace MIB_Browser.ViewModel;
@@ -15,12 +16,27 @@ public class MainPageViewModel : INotifyPropertyChanged
 {
     public MainPageViewModel()
     {
-        ObjectIDs = new();
+        AgentIP = Properties.mibbrowser.Default.AgentIP;
+        Community = Properties.mibbrowser.Default.Community;
+        ObjectIDs = new()
+        {
+            "1.3.6.1.2.1.1.1.0"
+        };
+        SelectedIndex = 0;
+        SelectedValue = "1.3.6.1.2.1.1.1.0";
+        Timeout = Properties.mibbrowser.Default.Timeout;
+        MaxRepetitions = Properties.mibbrowser.Default.MaxRepetitions;
+        IpBegin = "192.168.0.1";
+        IpEnd = "192.168.0.255";
+        ProgressbarVisibility = Visibility.Collapsed;
+        ProgressbarIsIndeterminate = true;
+        Text = string.Empty;
+        ProgressbarValue = 0;
     }
 
     private string _agentIP;
     private string _community;
-    private List<string> _objectIDs;
+    private ObservableCollection<string> _objectIDs;
     private string _selectedValue;
     private int _selectedIndex;
     private int _timeout;
@@ -30,14 +46,14 @@ public class MainPageViewModel : INotifyPropertyChanged
     private Visibility _progressbarVisibility;
     private bool _progressbarIsIndeterminate;
     private string _text;
-    private double _scrollOffset;
-    private int _progressbarValue; 
-    
-    public AsyncRelayCommand GetValueCommand { get; set; }
-    public AsyncRelayCommand GetNextCommand { get; set; }
-    public AsyncRelayCommand GetBulkCommand { get; set; }
-    public AsyncRelayCommand GetTreeCommand { get; set; }
-    public AsyncRelayCommand ScanCommand { get; set; }
+    private double _progressbarValue;
+
+    public IAsyncRelayCommand GetValueCommand { get; set; }
+    public IAsyncRelayCommand GetNextCommand { get; set; }
+    public IAsyncRelayCommand GetBulkCommand { get; set; }
+    public IAsyncRelayCommand GetTreeCommand { get; set; }
+    public IAsyncRelayCommand ScanCommand { get; set; }
+    public ICommand CancelCommand { get; set; }
 
 
     [XmlAttribute]
@@ -96,12 +112,12 @@ public class MainPageViewModel : INotifyPropertyChanged
     }
 
     [XmlAttribute]
-    public List<string> ObjectIDs
+    public ObservableCollection<string> ObjectIDs
     {
         get => _objectIDs;
         set
         {
-            if(_objectIDs != value)
+            if (_objectIDs != value)
             {
                 _objectIDs = value;
                 OnPropertyChanged();
@@ -118,32 +134,14 @@ public class MainPageViewModel : INotifyPropertyChanged
             if (_selectedValue != value)
             {
                 _selectedValue = value;
-                if (_objectIDs.Contains(_selectedValue))
-                {
-                    if (_objectIDs[_selectedIndex] != value)
-                    {
-                        _objectIDs.Remove(_selectedValue);
-                        _objectIDs.Insert(0, _selectedValue);
-                        _selectedIndex = 0;
 
-                        OnPropertyChanged(nameof(SelectedIndex));
-                        OnPropertyChanged(nameof(ObjectIDs));
-                        OnPropertyChanged();
-                    }
-                    else
-                    {
-                        return;
-                    }
-                }
-                else
+                if(!_objectIDs.Contains(value))
                 {
-                    _objectIDs.Insert(0, _selectedValue);
+                    _objectIDs.Insert(0, value);
                     _selectedIndex = 0;
-
                     OnPropertyChanged(nameof(SelectedIndex));
-                    OnPropertyChanged(nameof(ObjectIDs));
-                    OnPropertyChanged();
                 }
+                OnPropertyChanged();
             }
         }
     }
@@ -157,6 +155,11 @@ public class MainPageViewModel : INotifyPropertyChanged
             if (_selectedIndex != value)
             {
                 _selectedIndex = value;
+                if (_selectedIndex != -1)
+                {
+                    _selectedValue = _objectIDs[_selectedIndex];
+                    OnPropertyChanged(nameof(SelectedValue));
+                }
                 OnPropertyChanged();
             }
         }
@@ -233,22 +236,9 @@ public class MainPageViewModel : INotifyPropertyChanged
         }
     }
 
-    [XmlAttribute]
-    public double ScrollOffset
-    {
-        get => _scrollOffset;
-        set
-        {
-            if (value != _scrollOffset)
-            {
-                _scrollOffset = value;
-                OnPropertyChanged();
-            }
-        }
-    }
 
     [XmlAttribute]
-    public int ProgressbarValue
+    public double ProgressbarValue
     {
         get => _progressbarValue;
         set
@@ -260,6 +250,7 @@ public class MainPageViewModel : INotifyPropertyChanged
             }
         }
     }
+
 
     public void AppendText(string text)
     {
