@@ -9,9 +9,10 @@
  - Scan Hosts: 使用ICMP进行主机发现，并使用SNMP获取主机名称
 # 开发环境
 - Visual Studio 2022 ver 17.6.4
-- WindowsAppSDK(WinUI3) ver 1.3.230602002
+- WindowsAppSDK(WinUI3) ver 1.3.230602002+ (Latest 1.4.230822000)
+- CommunityToolkit.Mvvm ver 8.2.1
 # 新进展
-1. 采用MVVM开发模式重构了代码。
+1. 采用MVVM开发模式重构了代码。(从造轮子到使用CommunityToolkit)
 2. 采用了全新MicaAlt材质作为背景。
 3. 去除了任务栏烦人的背景色。
 # 未来规划
