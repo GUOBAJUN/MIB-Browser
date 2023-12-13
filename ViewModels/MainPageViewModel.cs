@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Xml.Serialization;
 using CommunityToolkit.Mvvm.Input;
@@ -48,12 +43,30 @@ public class MainPageViewModel : INotifyPropertyChanged
     private string _text;
     private double _progressbarValue;
 
-    public IAsyncRelayCommand GetValueCommand { get; set; }
-    public IAsyncRelayCommand GetNextCommand { get; set; }
-    public IAsyncRelayCommand GetBulkCommand { get; set; }
-    public IAsyncRelayCommand GetTreeCommand { get; set; }
-    public IAsyncRelayCommand ScanCommand { get; set; }
-    public ICommand CancelCommand { get; set; }
+    public IAsyncRelayCommand GetValueCommand
+    {
+        get; set;
+    }
+    public IAsyncRelayCommand GetNextCommand
+    {
+        get; set;
+    }
+    public IAsyncRelayCommand GetBulkCommand
+    {
+        get; set;
+    }
+    public IAsyncRelayCommand GetTreeCommand
+    {
+        get; set;
+    }
+    public IAsyncRelayCommand ScanCommand
+    {
+        get; set;
+    }
+    public ICommand CancelCommand
+    {
+        get; set;
+    }
 
 
     [XmlAttribute]
@@ -76,7 +89,7 @@ public class MainPageViewModel : INotifyPropertyChanged
         get => _progressbarIsIndeterminate;
         set
         {
-            if(_progressbarIsIndeterminate != value)
+            if (_progressbarIsIndeterminate != value)
             {
                 _progressbarIsIndeterminate = value;
                 OnPropertyChanged();
@@ -104,7 +117,8 @@ public class MainPageViewModel : INotifyPropertyChanged
         get => _community;
         set
         {
-            if (_community != value) { 
+            if (_community != value)
+            {
                 _community = value;
                 OnPropertyChanged();
             }
@@ -135,7 +149,7 @@ public class MainPageViewModel : INotifyPropertyChanged
             {
                 _selectedValue = value;
 
-                if(!_objectIDs.Contains(value))
+                if (!_objectIDs.Contains(value))
                 {
                     _objectIDs.Insert(0, value);
                     _selectedIndex = 0;
@@ -186,7 +200,7 @@ public class MainPageViewModel : INotifyPropertyChanged
         get => _maxRepetitions;
         set
         {
-            if(_maxRepetitions != value)
+            if (_maxRepetitions != value)
             {
                 _maxRepetitions = value;
                 OnPropertyChanged();
@@ -200,7 +214,7 @@ public class MainPageViewModel : INotifyPropertyChanged
         get => _ipBegin;
         set
         {
-            if(_ipBegin != value)
+            if (_ipBegin != value)
             {
                 _ipBegin = value;
                 OnPropertyChanged();
@@ -243,7 +257,7 @@ public class MainPageViewModel : INotifyPropertyChanged
         get => _progressbarValue;
         set
         {
-            if(value != _progressbarValue)
+            if (value != _progressbarValue)
             {
                 _progressbarValue = value;
                 OnPropertyChanged();
@@ -258,6 +272,6 @@ public class MainPageViewModel : INotifyPropertyChanged
     }
 
     public event PropertyChangedEventHandler PropertyChanged;
-    protected void OnPropertyChanged([CallerMemberName] string propertyName = "")=>
-        PropertyChanged?.Invoke(this,new PropertyChangedEventArgs(propertyName));
+    protected void OnPropertyChanged([CallerMemberName] string propertyName = "") =>
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }

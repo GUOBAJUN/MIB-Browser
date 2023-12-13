@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpLib.Messaging;
-using Windows.Security.Isolation;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -16,11 +13,26 @@ namespace MIB_Browser;
 
 public class MibBrowser
 {
-    public string AgentIP { get; set; }
-    public string OID { get; set; }
-    public string Community { get; set; }
-    public int Timeout { get; set; }
-    public int MaxRepetitions { get; set; }
+    public string AgentIP
+    {
+        get; set;
+    }
+    public string OID
+    {
+        get; set;
+    }
+    public string Community
+    {
+        get; set;
+    }
+    public int Timeout
+    {
+        get; set;
+    }
+    public int MaxRepetitions
+    {
+        get; set;
+    }
     public int request_id = 0;
 
     public MibBrowser(string agentIP = "127.0.0.1", string oid = "1.3.6.1.2.1.1.1.0", string community = "public", int timeout = 2000, int maxRepetitions = 10)
@@ -64,7 +76,7 @@ public class MibBrowser
         ISnmpMessage response;
         try
         {
-            response = await request.GetResponseAsync(receiver,new System.Threading.CancellationTokenSource(Timeout).Token);
+            response = await request.GetResponseAsync(receiver, new System.Threading.CancellationTokenSource(Timeout).Token);
             if (response != null)
             {
                 return response.Pdu().Variables;
