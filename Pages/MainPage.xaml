@@ -71,7 +71,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Text="OID"/>
-                <ComboBox Grid.Column="1" IsEditable="True" ItemsSource="{x:Bind viewModel.ObjectIDs, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" SelectedValue="{x:Bind viewModel.SelectedValue, Mode=TwoWay}" SelectedIndex="{x:Bind viewModel.SelectedIndex, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Stretch" MaxDropDownHeight="40"/>
+                <ComboBox Grid.Column="1" IsEditable="True" ItemsSource="{x:Bind viewModel.ObjectIDs, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" SelectedValue="{x:Bind viewModel.SelectedValue, Mode=TwoWay}" SelectedIndex="{x:Bind viewModel.SelectedIndex, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Stretch" MaxDropDownHeight="76"/>
                 <Button Grid.Column="2" Content="Get Bulk" Command="{x:Bind viewModel.GetBulkCommand}" Style="{ThemeResource AccentButtonStyle}"/>
             </Grid>
             <Grid Grid.Row="3">
